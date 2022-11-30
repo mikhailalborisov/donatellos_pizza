@@ -86,7 +86,28 @@ class Basket(models.Model):
         help_text="Выберите пользователя",
         verbose_name="Пользователь",
     )
+    products = models.ManyToManyField(Product, through="ProductInBasket")
 
+
+class ProductInBasket(models.Model):
+    basket = models.ForeignKey(
+        "Basket",
+        on_delete=models.CASCADE,
+        related_name="products_in_basket",
+    )
+    product = models.ForeignKey(
+        "Product",
+        on_delete=models.CASCADE,
+        related_name="baskets_for_product",
+    )
+    count = models.PositiveIntegerField(
+        help_text="Количество",
+        verbose_name="Количество"
+    )
+
+
+# Basket.objects.filter(products_in_basket__product=product_pk) # Найти все корзины у которых есть предмет с таким-то id (например все корзины с пиццей маргарита)
+# Product.objects.filter(baskets_for_product__basket=basket_pk) # Найти все продукты которые есть в определенной корзине
 
 # Чек. Добавить пользователя с ролью доставки.
 # Нужно добавить адрес, ожидаемое время доставки. Выполнена доставка. Добавить время заказа
