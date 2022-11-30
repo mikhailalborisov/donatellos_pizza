@@ -16,11 +16,30 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from donatellos_pizza_app.views import ProductViewSet, BasketiewSet
+from donatellos_pizza_app.views import ProductViewSet, BasketViewSet
 
 router = DefaultRouter()
-router.register(r"product", ProductViewSet, basename="product")
-router.register(r"basket", BasketiewSet, basename="basket")
+router.register(r"product", ProductViewSet, basename="product") #/product
+router.register(r"basket", BasketViewSet, basename="basket") #/basket
+
+
+# drf-nested-routes https://github.com/alanjds/drf-nested-routers
+#/basket/<basket_id>/items
+#/basket/<basket_id>/items/<item_id>
+
+# {"product_id" : 10, "count" : 1}
+
+
+# {"basket" : 12, "products" : [{name: name, price: price, ...},{name: name, price: price, ...},]}
+
+# работать только с одним заказом одновременно - переопределение query set
+# работать только со своим заказом - достать пользователя из данных по запросу - permission_classes = (IsAuthenticated, )
+
+# POST /basket/<basket_id>/items [авторизация] - добавлять в свой заказ блюда из меню пиццерии
+# GET /basket/<basket_id>/items [авторизация] - смотреть блюда из своего текущего заказа
+# PATCH /basket/<basket_id>/items/<item_id> {count} [авторизация] - редактировать количество каждого из блюд в заказ
+# DELETE /basket/<basket_id>/items/<item_id> [авторизация] - убирать блюдо из заказа
+
 
 urlpatterns = [
     path("admin/", admin.site.urls),
