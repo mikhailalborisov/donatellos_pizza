@@ -1,5 +1,5 @@
-from .serializers import ProductSerializer, BasketSerializer
-from donatellos_pizza_app.models import Product, Basket
+from .serializers import ProductSerializer, BasketSerializer, BasketItemsSerializer
+from donatellos_pizza_app.models import Product, Basket, ProductInBasket
 from rest_framework import viewsets, mixins
 from rest_framework.permissions import IsAuthenticated
 from .filters import ProductFilterSet
@@ -25,7 +25,6 @@ class BasketViewSet(
     mixins.ListModelMixin,
     viewsets.GenericViewSet,
 ):
-
     permission_classes = [IsAuthenticated]
 
     # queryset = Basket.objects.all().order_by("-id") #.filter(user=...) <достать пользователя из данных по запросу>
@@ -41,3 +40,13 @@ class BasketViewSet(
         request.data["user"] = user.pk
         ret = super().create(request, *args, **kwargs)
         return ret
+
+
+class BasketItemsViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
+
+    serializer_class = BasketItemsSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        return ProductInBasket.objects.filter(basket__user=user.pk, basket=self.kwargs['basket_pk']).order_by("-id")

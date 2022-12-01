@@ -1,11 +1,17 @@
 from rest_framework import serializers
-from django.utils import timezone
-from donatellos_pizza_app.models import Product, Category, Basket
+# from rest_framework_nested.serializers import NestedHyperlinkedModelSerializer
+from donatellos_pizza_app.models import Product, Category, Basket, ProductInBasket
 
 
 class BasketSerializer(serializers.ModelSerializer):
     class Meta:
         model = Basket
+        fields = "__all__"
+
+
+class BasketItemsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductInBasket
         fields = "__all__"
 
 
