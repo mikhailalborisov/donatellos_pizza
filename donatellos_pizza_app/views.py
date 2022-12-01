@@ -52,3 +52,11 @@ class BasketItemsViewSet(viewsets.ModelViewSet):
         return ProductInBasket.objects.filter(
             basket__user=user.pk, basket=self.kwargs["basket_pk"]
         ).order_by("-id")
+
+    def create(self, request, *args, **kwargs):
+        user = request.user
+        basket_pk = self.kwargs["basket_pk"]
+        if Basket.objects.filter(user=user.pk, id=basket_pk).exists():
+            request.data["basket"] = self.kwargs["basket_pk"]
+            ret = super().create(request, *args, **kwargs)
+            return ret
