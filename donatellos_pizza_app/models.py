@@ -91,18 +91,13 @@ class Basket(models.Model):
 
 class ProductInBasket(models.Model):
     basket = models.ForeignKey(
-        "Basket",
-        on_delete=models.CASCADE,
-        related_name="products_in_basket",
+        "Basket", on_delete=models.CASCADE, related_name="products_in_basket",
     )
     product = models.ForeignKey(
-        "Product",
-        on_delete=models.CASCADE,
-        related_name="baskets_for_product",
+        "Product", on_delete=models.CASCADE, related_name="baskets_for_product",
     )
     count = models.PositiveIntegerField(
-        help_text="Количество",
-        verbose_name="Количество"
+        help_text="Количество", verbose_name="Количество"
     )
 
 

@@ -49,4 +49,6 @@ class BasketItemsViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        return ProductInBasket.objects.filter(basket__user=user.pk, basket=self.kwargs['basket_pk']).order_by("-id")
+        return ProductInBasket.objects.filter(
+            basket__user=user.pk, basket=self.kwargs["basket_pk"]
+        ).order_by("-id")

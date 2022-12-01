@@ -7,16 +7,16 @@ from donatellos_pizza_app.views import ProductViewSet, BasketViewSet, BasketItem
 from rest_framework_nested import routers
 
 router = routers.DefaultRouter()
-router.register(r"product", ProductViewSet, basename="product") #/product
-router.register(r"basket", BasketViewSet, basename="basket") #/basket
+router.register(r"product", ProductViewSet, basename="product")  # /product
+router.register(r"basket", BasketViewSet, basename="basket")  # /basket
 
-basket_router = routers.NestedSimpleRouter(router, r'basket', lookup='basket')
-basket_router.register(r'items', BasketItemsViewSet, basename='basket-items')
+basket_router = routers.NestedSimpleRouter(router, r"basket", lookup="basket")
+basket_router.register(r"items", BasketItemsViewSet, basename="basket-items")
 
 
 # drf-nested-routers https://github.com/alanjds/drf-nested-routers
-#/basket/<basket_id>/items
-#/basket/<basket_id>/items/<item_id>
+# /basket/<basket_id>/items
+# /basket/<basket_id>/items/<item_id>
 
 # {"product_id" : 10, "count" : 1}
 
