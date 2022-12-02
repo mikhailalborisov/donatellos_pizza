@@ -1,9 +1,9 @@
 from .serializers import ProductSerializer, BasketSerializer, BasketItemsSerializer
 from donatellos_pizza_app.models import Product, Basket, ProductInBasket
-from rest_framework import viewsets, mixins
+from rest_framework import viewsets, mixins, status
 from rest_framework.permissions import IsAuthenticated
 from .filters import ProductFilterSet
-
+from rest_framework.response import Response
 
 # Create your views here.
 class ProductViewSet(
@@ -60,3 +60,18 @@ class BasketItemsViewSet(viewsets.ModelViewSet):
             request.data["basket"] = self.kwargs["basket_pk"]
             ret = super().create(request, *args, **kwargs)
             return ret
+        return Response({"404"}, status=status.HTTP_404_NOT_FOUND)
+
+    def update(self, request, *args, **kwargs):
+        user = request.user
+        basket_pk = self.kwargs["basket_pk"]
+        if Basket.objects.filter(user=user.pk, id=basket_pk).exists():
+            if ProductInBasket.objects.filter(
+                basket=basket_pk, id=self.kwargs["pk"]
+            ).exists():
+                if request.data["count"] == 0:
+                    pass  # delete entity, return
+                request.data["basket"] = self.kwargs["basket_pk"]
+                ret = super().update(request, *args, **kwargs)
+                return ret
+        return Response({"404"}, status=status.HTTP_404_NOT_FOUND)
