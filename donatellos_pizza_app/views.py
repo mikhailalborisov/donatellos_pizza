@@ -75,3 +75,14 @@ class BasketItemsViewSet(viewsets.ModelViewSet):
                 ret = super().update(request, *args, **kwargs)
                 return ret
         return Response({"404"}, status=status.HTTP_404_NOT_FOUND)
+
+    def destroy(self, request, *args, **kwargs):
+        user = request.user
+        basket_pk = self.kwargs["basket_pk"]
+        if Basket.objects.filter(user=user.pk, id=basket_pk).exists():
+            if ProductInBasket.objects.filter(
+                basket=basket_pk, id=self.kwargs["pk"]
+            ).exists():
+                ret = super().destroy(request, *args, **kwargs)
+                return ret
+        return Response({"404"}, status=status.HTTP_404_NOT_FOUND)
