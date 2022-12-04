@@ -72,8 +72,8 @@ class Category(models.Model):
 
 # Корзина. Пользователи только с ролью. Когда оплачено или нет, что представляет в модель
 class Basket(models.Model):
-    cheque = models.ForeignKey(
-        "Cheque",
+    order = models.ForeignKey(
+        "Order",
         on_delete=models.CASCADE,
         help_text=" Выберите чек",
         verbose_name="Чек",
@@ -86,7 +86,13 @@ class Basket(models.Model):
         help_text="Выберите пользователя",
         verbose_name="Пользователь",
     )
+    status = models.BooleanField(
+        help_text="Введите статус заказа", verbose_name="Статус заказа", default=False
+    )
     products = models.ManyToManyField(Product, through="ProductInBasket")
+
+    def sum(self):
+        pass
 
 
 class ProductInBasket(models.Model):
@@ -106,16 +112,7 @@ class ProductInBasket(models.Model):
 
 # Чек. Добавить пользователя с ролью доставки.
 # Нужно добавить адрес, ожидаемое время доставки. Выполнена доставка. Добавить время заказа
-class Cheque(models.Model):
-    sum = models.PositiveIntegerField(
-        help_text="Введите сумму чека", verbose_name="Сумма чека"
-    )
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        help_text=" Выберите пользователя",
-        verbose_name="Пользователь",
-    )
+class Order(models.Model):
     address = models.CharField(
         max_length=100, help_text="Введите адрес клиента", verbose_name="Адрес"
     )
@@ -123,7 +120,10 @@ class Cheque(models.Model):
         help_text="Введите время заказа", verbose_name="Время заказа"
     )
     delivery_time = models.DateTimeField(
-        help_text="Введите время доставки", verbose_name="Время доставки"
+        help_text="Указать ожидаемое время доставки", verbose_name="Время доставки"
+    )
+    status = models.BooleanField(
+        help_text="Введите статус заказа", verbose_name="Статус заказа", default=False
     )
 
 
