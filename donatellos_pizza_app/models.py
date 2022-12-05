@@ -2,6 +2,12 @@ from django.db import models
 from django.contrib.auth.models import User, Group
 from django.conf import settings
 
+from donatellos_pizza_app.managers import (
+    AnnotatedManager,
+    AnnotatedProductsInBasketManager,
+)
+
+
 # пользователь. можно использовать стандартную таблицу пользователей, как и их роли
 #  class User(models.Model):
 #      first_name = models.CharField(
@@ -72,6 +78,8 @@ class Category(models.Model):
 
 # Корзина. Пользователи только с ролью. Когда оплачено или нет, что представляет в модель
 class Basket(models.Model):
+    objects = AnnotatedManager()
+
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -115,6 +123,8 @@ class Basket(models.Model):
 
 
 class ProductInBasket(models.Model):
+    objects = AnnotatedProductsInBasketManager()
+
     basket = models.ForeignKey(
         "Basket", on_delete=models.CASCADE, related_name="products_in_basket",
     )
