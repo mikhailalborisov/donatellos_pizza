@@ -72,14 +72,6 @@ class Category(models.Model):
 
 # Корзина. Пользователи только с ролью. Когда оплачено или нет, что представляет в модель
 class Basket(models.Model):
-    order = models.ForeignKey(
-        "Order",
-        on_delete=models.CASCADE,
-        help_text=" Выберите чек",
-        verbose_name="Чек",
-        blank=True,
-        null=True,
-    )
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -88,6 +80,33 @@ class Basket(models.Model):
     )
     status = models.BooleanField(
         help_text="Введите статус заказа", verbose_name="Статус заказа", default=False
+    )
+    delivered_status = models.BooleanField(
+        help_text="Введите статус доставки заказа",
+        verbose_name="Статус доставки заказа",
+        default=False,
+    )
+    address = models.CharField(
+        max_length=100,
+        default=None,
+        blank=True,
+        null=True,
+        help_text="Введите адрес клиента",
+        verbose_name="Адрес",
+    )
+    order_time = models.DateTimeField(
+        help_text="Введите время заказа",
+        default=None,
+        blank=True,
+        null=True,
+        verbose_name="Время заказа",
+    )
+    delivery_time = models.DateTimeField(
+        help_text="Указать ожидаемое время доставки",
+        default=None,
+        blank=True,
+        null=True,
+        verbose_name="Время доставки",
     )
     products = models.ManyToManyField(Product, through="ProductInBasket")
 
@@ -109,22 +128,6 @@ class ProductInBasket(models.Model):
 
 # Basket.objects.filter(products_in_basket__product=product_pk) # Найти все корзины у которых есть предмет с таким-то id (например все корзины с пиццей маргарита)
 # Product.objects.filter(baskets_for_product__basket=basket_pk) # Найти все продукты которые есть в определенной корзине
-
-# Чек. Добавить пользователя с ролью доставки.
-# Нужно добавить адрес, ожидаемое время доставки. Выполнена доставка. Добавить время заказа
-class Order(models.Model):
-    address = models.CharField(
-        max_length=100, help_text="Введите адрес клиента", verbose_name="Адрес"
-    )
-    order_time = models.DateTimeField(
-        help_text="Введите время заказа", verbose_name="Время заказа"
-    )
-    delivery_time = models.DateTimeField(
-        help_text="Указать ожидаемое время доставки", verbose_name="Время доставки"
-    )
-    status = models.BooleanField(
-        help_text="Введите статус заказа", verbose_name="Статус заказа", default=False
-    )
 
 
 # Склад. Заменить чек на корзину. Поле related_name - посмотреть в Google и проставить где нужно

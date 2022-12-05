@@ -91,13 +91,3 @@ class BasketItemsViewSet(viewsets.ModelViewSet):
                 ret = super().destroy(request, *args, **kwargs)
                 return ret
         return Response({"404"}, status=status.HTTP_404_NOT_FOUND)
-
-
-class OrderViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
-
-    serializer_class = BasketSerializer
-
-    def get_queryset(self):
-        user = self.request.user
-        return Basket.objects.filter(user=user.pk).order_by("-id")
