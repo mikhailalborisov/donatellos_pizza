@@ -1,7 +1,8 @@
-from .serializers import ProductSerializer, BasketSerializer, BasketItemsSerializer
+from .serializers import ProductSerializer, BasketSerializer, BasketItemsSerializer, AddressSerializer
 from donatellos_pizza_app.models import Product, Basket, ProductInBasket
 from rest_framework import viewsets, mixins, status
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import action
 from .filters import ProductFilterSet
 from rest_framework.response import Response
 
@@ -43,6 +44,25 @@ class BasketViewSet(viewsets.ModelViewSet):
             serializer = self.get_serializer(current_basket[0])
             return Response(serializer.data)
 
+    @action(methods=["GET"], detail=True, url_path='address', url_name='address')
+    def address(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data["address"])
+
+    @address.mapping.post
+    @address.mapping.patch
+    def set_address(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = AddressSerializer(data=request.data)
+        if serializer.is_valid():
+            instance.set_address(serializer.validated_data['address'])
+            instance.save()
+            return Response({'status': 'address set'})
+        else:
+            return Response(serializer.errors,
+                            status=status.HTTP_400_BAD_REQUEST)
+
 
 # from django.db.models import F, Sum
 
@@ -72,7 +92,7 @@ class BasketItemsViewSet(viewsets.ModelViewSet):
         basket_pk = self.kwargs.get("basket_pk")
         if Basket.objects.filter(user=user.pk, id=basket_pk).exists():
             if ProductInBasket.objects.filter(
-                basket=basket_pk, id=self.kwargs["pk"]
+                    basket=basket_pk, id=self.kwargs["pk"]
             ).exists():
                 if request.data["count"] == 0:
                     pass  # delete entity, return
@@ -86,7 +106,7 @@ class BasketItemsViewSet(viewsets.ModelViewSet):
         basket_pk = self.kwargs.get("basket_pk")
         if Basket.objects.filter(user=user.pk, id=basket_pk).exists():
             if ProductInBasket.objects.filter(
-                basket=basket_pk, id=self.kwargs["pk"]
+                    basket=basket_pk, id=self.kwargs["pk"]
             ).exists():
                 ret = super().destroy(request, *args, **kwargs)
                 return ret

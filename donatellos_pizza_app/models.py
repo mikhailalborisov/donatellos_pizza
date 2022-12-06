@@ -118,7 +118,8 @@ class Basket(models.Model):
     )
     products = models.ManyToManyField(Product, through="ProductInBasket")
 
-    def sum(self):
+    def set_address(self, value):
+        self.address = value
         pass
 
 
