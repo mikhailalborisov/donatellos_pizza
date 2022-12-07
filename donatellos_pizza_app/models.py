@@ -122,6 +122,10 @@ class Basket(models.Model):
         self.address = value
         pass
 
+    def set_delivery_time(self, value):
+        self.delivery_time = value
+        pass
+
 
 class ProductInBasket(models.Model):
     objects = AnnotatedProductsInBasketManager()

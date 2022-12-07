@@ -4,8 +4,13 @@ from rest_framework import serializers
 from donatellos_pizza_app.models import Product, Category, Basket, ProductInBasket
 
 
-class AddressSerializer(serializers.ModelSerializer):
+class DeliveryTimeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Basket
+        fields = ["delivery_time"]
 
+
+class AddressSerializer(serializers.ModelSerializer):
     class Meta:
         model = Basket
         fields = ["address"]
@@ -15,12 +20,13 @@ class AddressSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Название должно быть с заглавной буквы")
         return value
 
+
 class BasketSerializer(serializers.ModelSerializer):
     total_sum = serializers.IntegerField()
 
     class Meta:
         model = Basket
-        fields = "__all__"
+        exclude = ["products"]
 
 
 class BasketItemsSerializer(serializers.ModelSerializer):

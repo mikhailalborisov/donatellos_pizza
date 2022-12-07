@@ -1,4 +1,10 @@
-from .serializers import ProductSerializer, BasketSerializer, BasketItemsSerializer, AddressSerializer
+from .serializers import (
+    ProductSerializer,
+    BasketSerializer,
+    BasketItemsSerializer,
+    AddressSerializer,
+    DeliveryTimeSerializer,
+)
 from donatellos_pizza_app.models import Product, Basket, ProductInBasket
 from rest_framework import viewsets, mixins, status
 from rest_framework.permissions import IsAuthenticated
@@ -44,11 +50,19 @@ class BasketViewSet(viewsets.ModelViewSet):
             serializer = self.get_serializer(current_basket[0])
             return Response(serializer.data)
 
-    @action(methods=["GET"], detail=True, url_path='address', url_name='address')
+    @action(methods=["GET"], detail=True, url_path="address", url_name="address")
     def address(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer(instance)
         return Response(serializer.data["address"])
+
+    @action(
+        methods=["GET"], detail=True, url_path="delivery_time", url_name="delivery_time"
+    )
+    def delivery_time(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data["delivery_time"])
 
     @address.mapping.post
     @address.mapping.patch
@@ -56,12 +70,23 @@ class BasketViewSet(viewsets.ModelViewSet):
         instance = self.get_object()
         serializer = AddressSerializer(data=request.data)
         if serializer.is_valid():
-            instance.set_address(serializer.validated_data['address'])
+            instance.set_address(serializer.validated_data["address"])
             instance.save()
-            return Response({'status': 'address set'})
+            return Response({"status": "address set"})
         else:
-            return Response(serializer.errors,
-                            status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @delivery_time.mapping.post
+    @delivery_time.mapping.patch
+    def set_delivery_time(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = DeliveryTimeSerializer(data=request.data)
+        if serializer.is_valid():
+            instance.set_delivery_time(serializer.validated_data["delivery_time"])
+            instance.save()
+            return Response({"delivered_status": "delivery_time set"})
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 # from django.db.models import F, Sum
@@ -92,7 +117,7 @@ class BasketItemsViewSet(viewsets.ModelViewSet):
         basket_pk = self.kwargs.get("basket_pk")
         if Basket.objects.filter(user=user.pk, id=basket_pk).exists():
             if ProductInBasket.objects.filter(
-                    basket=basket_pk, id=self.kwargs["pk"]
+                basket=basket_pk, id=self.kwargs["pk"]
             ).exists():
                 if request.data["count"] == 0:
                     pass  # delete entity, return
@@ -106,7 +131,7 @@ class BasketItemsViewSet(viewsets.ModelViewSet):
         basket_pk = self.kwargs.get("basket_pk")
         if Basket.objects.filter(user=user.pk, id=basket_pk).exists():
             if ProductInBasket.objects.filter(
-                    basket=basket_pk, id=self.kwargs["pk"]
+                basket=basket_pk, id=self.kwargs["pk"]
             ).exists():
                 ret = super().destroy(request, *args, **kwargs)
                 return ret
