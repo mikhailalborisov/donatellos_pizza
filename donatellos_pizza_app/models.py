@@ -1,3 +1,5 @@
+import datetime
+
 from django.db import models
 from django.contrib.auth.models import User, Group
 from django.conf import settings
@@ -8,43 +10,6 @@ from donatellos_pizza_app.managers import (
 )
 
 
-# пользователь. можно использовать стандартную таблицу пользователей, как и их роли
-#  class User(models.Model):
-#      first_name = models.CharField(
-#          max_length=100,
-#          help_text="Введите имя с заглавной буквы",
-#          verbose_name="Имя"
-#      )
-#      patronymic = models.CharField(
-#          max_length=100,
-#          help_text="Введите отчество",
-#          verbose_name="Отчество",
-#          null=True,
-#          blank=True,
-#      )
-#      last_name = models.CharField(
-#          max_length=100,
-#          help_text="Введите фамилию",
-#          verbose_name="Фамилия",
-#      )
-#      role = models.ForeignKey(
-#          "Role",
-#          on_delete=models.CASCADE,
-#          help_text=" Выберите роль пользователя",
-#          verbose_name="Роль пользователя",
-#      )
-
-
-# роль. Модели групп можно свои или стандартные
-# class Role(models.Model):
-#     name = models.CharField(
-#         max_length=100,
-#         help_text="Введите название роли",
-#         verbose_name="Название роли"
-#     )
-
-
-# продукция. Меню блюда, имя, где категории блюда
 class Product(models.Model):
     name = models.CharField(
         max_length=100,
@@ -120,11 +85,13 @@ class Basket(models.Model):
 
     def set_address(self, value):
         self.address = value
-        pass
 
     def set_delivery_time(self, value):
         self.delivery_time = value
-        pass
+
+    def payment(self):
+        self.status = True
+        self.order_time = datetime.datetime.now(tz=datetime.timezone.utc)
 
 
 class ProductInBasket(models.Model):
@@ -139,10 +106,6 @@ class ProductInBasket(models.Model):
     count = models.PositiveIntegerField(
         help_text="Количество", verbose_name="Количество"
     )
-
-
-# Basket.objects.filter(products_in_basket__product=product_pk) # Найти все корзины у которых есть предмет с таким-то id (например все корзины с пиццей маргарита)
-# Product.objects.filter(baskets_for_product__basket=basket_pk) # Найти все продукты которые есть в определенной корзине
 
 
 # Склад. Заменить чек на корзину. Поле related_name - посмотреть в Google и проставить где нужно

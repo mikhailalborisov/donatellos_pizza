@@ -1,5 +1,5 @@
-from django.db.models import F, Sum, Manager
-from django.db.models import QuerySet
+from django.db.models import F, Sum, Manager, QuerySet
+from django.db.models.functions import Coalesce
 
 
 class AnnotatedProductsInBasketManager(Manager):
@@ -18,7 +18,7 @@ class AnnotatedManager(Manager):
         qs = qs.prefetch_related("products_in_basket")
         qs = qs.prefetch_related("products")
         qs = qs.annotate(
-            total_sum=Sum(F("products__price") * F("products_in_basket__count"))
+            total_sum=Coalesce(Sum(F("products__price") * F("products_in_basket__count")), 0)
         )
 
         return qs
