@@ -42,7 +42,7 @@ class BasketSerializer(serializers.ModelSerializer):
 
 
 class BasketItemsSerializer(serializers.ModelSerializer):
-    item_cost = serializers.IntegerField()
+    item_cost = serializers.IntegerField(read_only=True, default=0, allow_null=True)
 
     class Meta:
         model = ProductInBasket

@@ -6,7 +6,7 @@ class AnnotatedProductsInBasketManager(Manager):
     def get_queryset(self) -> QuerySet:
         qs = super().get_queryset()
         qs = qs.prefetch_related("product")
-        qs = qs.annotate(item_cost=F("product__price") * F("count"))
+        qs = qs.annotate(item_cost=Coalesce(F("product__price") * F("count"), 0))
 
         return qs
 
